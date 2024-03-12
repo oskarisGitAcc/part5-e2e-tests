@@ -47,8 +47,24 @@ describe('Blog app', function() {
       cy.get('#blogAuthor').type('cypress')
       cy.get('#blogUrl').type('https://docs.cypress.io')
       cy.contains('create').click()
-
       cy.contains('a blog created by cypress')
+    })
+
+    describe('and a blog exists', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'a blog created by cypress',
+          author: 'cypress',
+          url: 'https://docs.cypress.io',
+          likes: 0
+        })
+      })
+
+      it('users can like a blog', function() {
+        cy.contains('a blog created by cypress').parent().find('button').click()
+        cy.contains('Like').click()
+        cy.contains('Likes: 1')
+      })
     })
   })
 })
