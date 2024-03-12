@@ -14,7 +14,7 @@ describe('Blog app', function() {
     cy.contains('Log in to application')
   })
 
-  describe('Login',function() {
+  describe('Login', function() {
     it('succeeds with correct credentials', function() {
       cy.login({ username: 'Superuser', password: 'salainen' })
       cy.contains('root logged in')
@@ -50,8 +50,8 @@ describe('Blog app', function() {
       cy.contains('a blog created by cypress')
     })
 
-    describe('and a blog exists', function () {
-      beforeEach(function () {
+    describe('and a blog exists', function() {
+      beforeEach(function() {
         cy.createBlog({
           title: 'a blog created by cypress',
           author: 'cypress',
@@ -64,6 +64,12 @@ describe('Blog app', function() {
         cy.contains('a blog created by cypress').parent().find('button').click()
         cy.contains('Like').click()
         cy.contains('Likes: 1')
+      })
+
+      it('user who created a blog can delete it', function() {
+        cy.contains('a blog created by cypress').parent().find('button').click()
+        cy.contains('Remove').click()
+        cy.contains('a blog created by cypress').should('not.exist')
       })
     })
   })
