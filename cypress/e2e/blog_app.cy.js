@@ -1,12 +1,18 @@
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    const user = {
+    const user1 = {
       name: 'root',
       username: 'Superuser',
       password: 'salainen'
     }
-    cy.request('POST', 'http://localhost:3003/api/users/', user)
+    const user2 = {
+      name: 'Oskari',
+      username: 'pyykkoo1',
+      password: 'password'
+    }
+    cy.request('POST', 'http://localhost:3003/api/users/', user1)
+    cy.request('POST', 'http://localhost:3003/api/users/', user2)
     cy.visit('http://localhost:5173')
   })
 
@@ -61,15 +67,25 @@ describe('Blog app', function() {
       })
 
       it('users can like a blog', function() {
-        cy.contains('a blog created by cypress').parent().find('button').click()
+        cy.contains('a blog created by cypress')
+          .parent().find('button').contains('View').click()
         cy.contains('Like').click()
         cy.contains('Likes: 1')
       })
 
       it('user who created a blog can delete it', function() {
-        cy.contains('a blog created by cypress').parent().find('button').click()
+        cy.contains('a blog created by cypress')
+          .parent().find('button').contains('View').click()
         cy.contains('Remove').click()
         cy.contains('a blog created by cypress').should('not.exist')
+      })
+
+      it('user who did not create the blog, cannot delete it', function() {
+        cy.contains('logout').click()
+        cy.login({ username: 'pyykkoo1', password: 'password' })
+        cy.contains('a blog created by cypress')
+          .parent().find('button').contains('View').click()
+        cy.contains('Remove').should('not.exist')
       })
     })
   })
