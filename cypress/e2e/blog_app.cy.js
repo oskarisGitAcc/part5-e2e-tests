@@ -87,6 +87,45 @@ describe('Blog app', function() {
           .parent().find('button').contains('View').click()
         cy.contains('Remove').should('not.exist')
       })
+
+      it('Blogs are ordered by likes', function() {
+        cy.createBlog({
+          title: 'Blog with 3 likes',
+          author: 'Author',
+          url: 'https://docs.cypress.io',
+          likes: 3
+        })
+        cy.createBlog({
+          title: 'Blog with 1 like',
+          author: 'Author',
+          url: 'https://docs.cypress.io',
+          likes: 1
+        })
+        cy.createBlog({
+          title: 'Blog with 2 likes',
+          author: 'Author',
+          url: 'https://docs.cypress.io',
+          likes: 2
+        })
+
+        cy.contains('Blog with 2 likes')
+          .parent().find('button').contains('View').click()
+        cy.contains('Blog with 2 likes')
+          .parent().find('button').contains('Like').click()
+        cy.contains('Blog with 2 likes')
+          .parent().find('button').contains('Like').click()
+        cy.contains('Blog with 1 like')
+          .parent().find('button').contains('View').click()
+        cy.contains('Blog with 1 like')
+          .parent().find('button').contains('Like').click()
+
+        cy.get('.blog').eq(0)
+          .should('contain', 'Blog with 2 likes')
+        cy.get('.blog').eq(1)
+          .should('contain', 'Blog with 3 likes')
+        cy.get('.blog').eq(2)
+          .should('contain', 'Blog with 1 like')
+      })
     })
   })
 })
