@@ -1,5 +1,4 @@
 describe('Blog app', function() {
-
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
     const user = {
@@ -16,15 +15,9 @@ describe('Blog app', function() {
   })
 
   describe('Login',function() {
-
     it('succeeds with correct credentials', function() {
-      cy.request('POST', 'http://localhost:3003/api/login', {
-        username: 'Superuser', password: 'salainen'
-      }).then(response => {
-        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
-        cy.visit('http://localhost:5173')
-        cy.contains('root logged in')
-      })
+      cy.login({ username: 'Superuser', password: 'salainen' })
+      cy.contains('root logged in')
     })
 
     it('fails with wrong credentials', function() {
@@ -37,12 +30,25 @@ describe('Blog app', function() {
           password: 'salainen'
         }
       }).then(response => {
-        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
-        cy.visit('http://localhost:5173')
         expect(response.status).to.eq(401)
         cy.contains('root logged in').should('not.exist')
       })
     })
+  })
 
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.login({ username: 'Superuser', password: 'salainen' })
+    })
+
+    it('A blog can be created', function() {
+      cy.contains('Create new blog').click()
+      cy.get('#blogTitle').type('a blog created by cypress')
+      cy.get('#blogAuthor').type('cypress')
+      cy.get('#blogUrl').type('https://docs.cypress.io')
+      cy.contains('create').click()
+
+      cy.contains('a blog created by cypress')
+    })
   })
 })
